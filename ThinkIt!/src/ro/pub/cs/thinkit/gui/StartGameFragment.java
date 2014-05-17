@@ -33,6 +33,7 @@ public class StartGameFragment extends Fragment implements Serializable {
 			public void onClick(View arg0) {
 				if (networkManager != null) {
 					networkManager.write(Constants.START_GAME.getBytes());
+					showToast(Constants.REQUEST_SENT);
 					Log.v(TAG, "I want to start a game.");
 				}
 			}
@@ -42,7 +43,7 @@ public class StartGameFragment extends Fragment implements Serializable {
 
 	/**
 	 * Alert window displayed when new game request occurs.
-	 *
+	 * 
 	 * @param name
 	 *            : opponent's name
 	 */
@@ -64,7 +65,11 @@ public class StartGameFragment extends Fragment implements Serializable {
 	}
 
 	public void challengeDenied() {
-		Toast.makeText(view.getContext(), Constants.CHALLENGE_DENIED, Toast.LENGTH_SHORT).show();
+		showToast(Constants.CHALLENGE_DENIED);
+	}
+
+	public void showToast(String message) {
+		Toast.makeText(view.getContext(), message, Toast.LENGTH_SHORT).show();
 	}
 
 	public void setNetworkManager(NetworkManager obj) {
