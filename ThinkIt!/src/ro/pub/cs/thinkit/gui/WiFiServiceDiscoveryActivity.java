@@ -284,8 +284,13 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 			String readMessage = new String(readBuf, 0, msg.arg1);
 			Log.d(TAG, readMessage);
 			if (Constants.START_GAME.equals(readMessage)) {
+				startGameFragment.alert("FooBar");
 				getFragmentManager().beginTransaction().replace(R.id.container_root, quizFragment).commit();
 				Log.v(TAG, "Change to quizFragment.");
+			} else if (Constants.ACCEPT_GAME.equals(readMessage)) {
+				getFragmentManager().beginTransaction().replace(R.id.container_root, quizFragment).commit();
+				Log.v(TAG, "Peer accepted my game request.");
+			} else if (Constants.CANCEL_GAME.equals(readMessage)) {
 			} else {
 				quizFragment.pushMessage("Buddy: " + readMessage);
 			}
