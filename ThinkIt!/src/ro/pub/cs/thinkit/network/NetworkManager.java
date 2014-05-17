@@ -25,7 +25,7 @@ public class NetworkManager implements Runnable {
 
     private InputStream iStream;
     private OutputStream oStream;
-    private static final String TAG = "ChatHandler";
+    private static final String TAG = "NetworkHandler";
 
     @Override
     public void run() {

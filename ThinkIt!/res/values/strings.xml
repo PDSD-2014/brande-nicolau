@@ -5,5 +5,6 @@
     <string name="btn_send">Send</string>
     <string name="txt_hint">Type Message</string>
     <string name="app_name">ThinkIt!</string>
+    <string name="image">Front Page Image</string>
 
 </resources>

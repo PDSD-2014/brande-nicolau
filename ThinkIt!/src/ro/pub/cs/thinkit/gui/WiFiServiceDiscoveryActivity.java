@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ro.pub.cs.thinkit.R;
-import ro.pub.cs.thinkit.gui.WiFiChatFragment.MessageTarget;
+import ro.pub.cs.thinkit.gui.QuizFragment.MessageTarget;
 import ro.pub.cs.thinkit.gui.WiFiDirectServicesList.DeviceClickListener;
 import ro.pub.cs.thinkit.gui.WiFiDirectServicesList.WiFiDevicesAdapter;
 import ro.pub.cs.thinkit.network.ClientSocketHandler;
@@ -34,27 +34,28 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
- * The main activity for the sample. This activity registers a local service and
+ * The main activity for the app. This activity registers a local service and
  * perform discovery over Wi-Fi p2p network. It also hosts a couple of fragments
- * to manage chat operations. When the app is launched, the device publishes a
- * chat service and also tries to discover services published by other peers. On
+ * to manage quiz operations. When the app is launched, the device publishes a
+ * quiz service and also tries to discover services published by other peers. On
  * selecting a peer published service, the app initiates a Wi-Fi P2P (Direct)
  * connection with the peer. On successful connection with a peer advertising
- * the same service, the app opens up sockets to initiate a chat.
- * {@code WiFiChatFragment} is then added to the the main activity which manages
- * the interface and messaging needs for a chat session.
+ * the same service, the app opens up sockets to initiate a quiz.
+ * {@code QuizFragment} is then added to the the main activity which manages
+ * the interface and messaging needs for a quiz session.
  */
 public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClickListener, Handler.Callback,
 	MessageTarget, ConnectionInfoListener {
 
-    public static final String TAG = "wifidirectdemo";
+    public static final String TAG = "ThinkIt!";
 
     // TXT RECORD properties
     public static final String TXTRECORD_PROP_AVAILABLE = "available";
-    public static final String SERVICE_INSTANCE = "_wifidemotest";
+    public static final String SERVICE_INSTANCE = "_thinkIt";
     public static final String SERVICE_REG_TYPE = "_presence._tcp";
 
     public static final int MESSAGE_READ = 0x400 + 1;
@@ -69,10 +70,11 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
     private WifiP2pDnsSdServiceRequest serviceRequest;
 
     private Handler handler = new Handler(this);
-    private WiFiChatFragment chatFragment;
+    private QuizFragment quizFragment;
     private WiFiDirectServicesList servicesList;
 
     private TextView statusTxtView;
+    private ImageView image;
 
     public Handler getHandler() {
 	return handler;
@@ -88,7 +90,9 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 	super.onCreate(savedInstanceState);
 	setContentView(R.layout.main);
 	statusTxtView = (TextView) findViewById(R.id.status_text);
-
+	image = (ImageView) findViewById(R.id.imageView1);
+	image.setBackgroundResource(R.drawable.brain2);
+	
 	intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
 	intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
 	intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
@@ -271,12 +275,12 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 	    // construct a string from the valid bytes in the buffer
 	    String readMessage = new String(readBuf, 0, msg.arg1);
 	    Log.d(TAG, readMessage);
-	    (chatFragment).pushMessage("Buddy: " + readMessage);
+	    (quizFragment).pushMessage("Buddy: " + readMessage);
 	    break;
 
 	case MY_HANDLE:
 	    Object obj = msg.obj;
-	    (chatFragment).setChatManager((NetworkManager) obj);
+	    (quizFragment).setNetworkManager((NetworkManager) obj);
 
 	}
 	return true;
@@ -315,11 +319,11 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 	    }
 	} else {
 	    Log.d(TAG, "Connected as peer");
-	    handler = new ClientSocketHandler(((MessageTarget) this).getHandler(), p2pInfo.groupOwnerAddress);
+			handler = new ClientSocketHandler(((MessageTarget) this).getHandler(), p2pInfo.groupOwnerAddress);
 	    handler.start();
 	}
-	chatFragment = new WiFiChatFragment();
-	getFragmentManager().beginTransaction().replace(R.id.container_root, chatFragment).commit();
+	quizFragment = new QuizFragment();
+	getFragmentManager().beginTransaction().replace(R.id.container_root, quizFragment).commit();
 	statusTxtView.setVisibility(View.GONE);
     }
 
