@@ -39,6 +39,7 @@ public class GameFragment extends Fragment implements Serializable {
 	private TextView opponentScore;
 	private TextView questionText;
 	private TextView timer;
+	private GameTimer gameTimer;
 	private ProgressBar myProgressBar;
 	private ProgressBar opponentProgressBar;
 	private int questionId;
@@ -88,6 +89,11 @@ public class GameFragment extends Fragment implements Serializable {
 		timer = (TextView) view.findViewById(R.id.timer);
 		myProgressBar = (ProgressBar) view.findViewById(R.id.myProgress);
 		opponentProgressBar = (ProgressBar) view.findViewById(R.id.opponentProgress);
+		gameTimer = new GameTimer(this);
+	}
+
+	public TextView getTimer() {
+		return timer;
 	}
 
 	public void populateFrameFields(int questionId) {
@@ -103,6 +109,8 @@ public class GameFragment extends Fragment implements Serializable {
 		answer2.setText(answers.get(1));
 		answer3.setText(answers.get(2));
 		answer4.setText(answers.get(3));
+
+		gameTimer.start();
 	}
 
 	public void sendId(String tag) {
@@ -155,6 +163,27 @@ public class GameFragment extends Fragment implements Serializable {
 		opponentScore.setText(String.valueOf(opponentScoreSituation) + " pts");
 	}
 
+	/**
+	 * Updates the GUI when the time is exceeded.
+	 */
+	public void handleTimeExpired() {
+		roundEnded = true;
+		viewCorrectAnswer();
+		updateMyRoundResult(0);
+	}
+
+	/**
+	 * Colors the right answer in CYAN.
+	 */
+	private void viewCorrectAnswer() {
+		for (Button btn : buttons) {
+			if (btn.getText().equals(question.getCa())) {
+				btn.setBackgroundColor(Color.CYAN);
+				break;
+			}
+		}
+	}
+
 	private class ButtonListener implements View.OnClickListener {
 
 		@Override
@@ -169,12 +198,7 @@ public class GameFragment extends Fragment implements Serializable {
 					selectedButton.setBackgroundColor(Color.RED);
 					updateMyRoundResult(0);
 					Log.v(TAG, "Wrong answer pressed.");
-					for (Button btn : buttons) {
-						if (btn.getText().equals(question.getCa())) {
-							btn.setBackgroundColor(Color.CYAN);
-							break;
-						}
-					}
+					viewCorrectAnswer();
 				}
 			}
 		}

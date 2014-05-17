@@ -9,4 +9,6 @@ public class Constants {
 	public static final String FIRST_QUESTION = "first_question_";
 	public static final String RENEW_QUESTION = "renew_question_";
 	public static final int QUESTION_SCORE = 10;
+	public static final int QUESTION_LIMIT_TIME = 10000;
+	public static final int COUNTDOWN_INTERVAL = 1000;
 }
