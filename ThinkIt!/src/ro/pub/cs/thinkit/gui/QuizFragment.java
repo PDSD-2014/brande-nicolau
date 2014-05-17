@@ -1,5 +1,6 @@
 package ro.pub.cs.thinkit.gui;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,8 +21,8 @@ import android.widget.TextView;
  * This fragment handles chat related UI which includes a list view for messages
  * and a message entry field with send button.
  */
-public class QuizFragment extends Fragment {
-
+public class QuizFragment extends Fragment implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private View view;
 	private NetworkManager networkManager;
 	private TextView chatLine;
