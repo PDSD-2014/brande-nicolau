@@ -10,6 +10,7 @@ import ro.pub.cs.thinkit.game.QuestionService;
 import ro.pub.cs.thinkit.network.NetworkManager;
 import android.app.Activity;
 import android.app.Fragment;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
@@ -40,12 +41,17 @@ public class GameFragment extends Fragment implements Serializable {
 	private ProgressBar opponentProgressBar;
 	private int questionId = 5;
 	private Question question;
+	private ArrayList<Button> buttons;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		view = inflater.inflate(R.layout.game_fragment, container, false);
 		connectWithFrameFields();
-
+		buttons = new ArrayList<Button>();
+		buttons.add(answer1);
+		buttons.add(answer2);
+		buttons.add(answer3);
+		buttons.add(answer4);
 		populateFrameFields(questionId);
 
 		ButtonListener buttonListener = new ButtonListener();
@@ -93,7 +99,20 @@ public class GameFragment extends Fragment implements Serializable {
 
 		@Override
 		public void onClick(View v) {
-			Log.v(TAG, "Button pressed.");
+			Button selectedButton = (Button) v;
+			if (selectedButton.getText().equals(question.getCa())) {
+				selectedButton.setBackgroundColor(Color.GREEN);
+				Log.v(TAG, "Correct answer pressed.");
+			} else {
+				selectedButton.setBackgroundColor(Color.RED);
+				Log.v(TAG, "Wrong answer pressed.");
+				for (Button btn : buttons) {
+					if (btn.getText().equals(question.getCa())) {
+						btn.setBackgroundColor(Color.CYAN);
+						break;
+					}
+				}
+			}
 		}
 
 	}
