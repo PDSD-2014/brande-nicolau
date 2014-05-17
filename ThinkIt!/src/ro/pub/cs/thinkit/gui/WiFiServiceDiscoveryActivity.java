@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ro.pub.cs.thinkit.R;
+import ro.pub.cs.thinkit.game.Constants;
 import ro.pub.cs.thinkit.game.QuestionService;
 import ro.pub.cs.thinkit.gui.QuizFragment.MessageTarget;
 import ro.pub.cs.thinkit.gui.WiFiDirectServicesList.DeviceClickListener;
@@ -72,6 +73,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 
 	private Handler handler = new Handler(this);
 	private QuizFragment quizFragment;
+	private StartGameFragment startGameFragment;
 	private WiFiDirectServicesList servicesList;
 
 	private TextView statusTxtView;
@@ -281,12 +283,18 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 			// construct a string from the valid bytes in the buffer
 			String readMessage = new String(readBuf, 0, msg.arg1);
 			Log.d(TAG, readMessage);
-			(quizFragment).pushMessage("Buddy: " + readMessage);
+			if (Constants.START_GAME.equals(readMessage)) {
+				getFragmentManager().beginTransaction().replace(R.id.container_root, quizFragment).commit();
+				Log.v(TAG, "Change to quizFragment.");
+			} else {
+				quizFragment.pushMessage("Buddy: " + readMessage);
+			}
 			break;
 
 		case MY_HANDLE:
 			Object obj = msg.obj;
-			(quizFragment).setNetworkManager((NetworkManager) obj);
+			startGameFragment.setNetworkManager((NetworkManager) obj);
+			quizFragment.setNetworkManager((NetworkManager) obj);
 
 		}
 		return true;
@@ -331,7 +339,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 		quizFragment = new QuizFragment();
 
 		// Setting the start game screen.
-		StartGameFragment startGameFragment = new StartGameFragment();
+		startGameFragment = new StartGameFragment();
 		// Passing as an argument a reference to the quizFragment so that we can
 		// go back to it.
 		Bundle bundle = new Bundle();
