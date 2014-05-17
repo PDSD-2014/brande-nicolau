@@ -26,7 +26,8 @@ public class ClientSocketHandler extends Thread {
 		Socket socket = new Socket();
 		try {
 			socket.bind(null);
-			socket.connect(new InetSocketAddress(mAddress.getHostAddress(), WiFiServiceDiscoveryActivity.SERVER_PORT), 5000);
+			socket.connect(new InetSocketAddress(mAddress.getHostAddress(), WiFiServiceDiscoveryActivity.SERVER_PORT),
+					5000);
 			Log.d(TAG, "Launching the I/O handler");
 			networkManager = new NetworkManager(socket, handler);
 			new Thread(networkManager).start();

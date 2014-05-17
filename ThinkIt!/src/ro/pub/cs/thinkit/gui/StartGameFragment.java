@@ -19,8 +19,8 @@ public class StartGameFragment extends Fragment implements Serializable {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-	    Bundle args = getArguments();
-	    quizFragment = (QuizFragment)args.getSerializable("quizFragment");
+		Bundle args = getArguments();
+		quizFragment = (QuizFragment) args.getSerializable("quizFragment");
 		view = inflater.inflate(R.layout.start_game_fragment, container, false);
 		view.findViewById(R.id.startGame).setOnClickListener(new View.OnClickListener() {
 
