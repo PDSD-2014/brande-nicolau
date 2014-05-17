@@ -74,6 +74,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 	private Handler handler = new Handler(this);
 	private QuizFragment quizFragment;
 	private StartGameFragment startGameFragment;
+	private GameFragment gameFragment;
 	private WiFiDirectServicesList servicesList;
 
 	private TextView statusTxtView;
@@ -286,7 +287,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 			if (Constants.START_GAME.equals(readMessage)) {
 				startGameFragment.newChallenge("FooBar");
 			} else if (Constants.ACCEPT_GAME.equals(readMessage)) {
-				getFragmentManager().beginTransaction().replace(R.id.container_root, quizFragment).commit();
+				getFragmentManager().beginTransaction().replace(R.id.container_root, gameFragment).commit();
 				Log.v(TAG, "Peer accepted my game request.");
 			} else if (Constants.CANCEL_GAME.equals(readMessage)) {
 				startGameFragment.challengeDenied();
@@ -342,6 +343,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 			handler.start();
 		}
 		quizFragment = new QuizFragment();
+		gameFragment = new GameFragment();
 
 		// Setting the start game screen.
 		startGameFragment = new StartGameFragment();

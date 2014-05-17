@@ -1,5 +1,7 @@
 package ro.pub.cs.thinkit.game;
 
+import java.util.ArrayList;
+
 public class Question {
 
 	private String category;
@@ -20,6 +22,15 @@ public class Question {
 		this.ca = ca;
 	}
 
+	public ArrayList<String> getAnswers() {
+		ArrayList<String> list = new ArrayList<String>();
+		list.add(ca);
+		list.add(wa1);
+		list.add(wa2);
+		list.add(wa3);
+		return list;
+	}
+	
 	public String getCategory() {
 		return category;
 	}

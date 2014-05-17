@@ -6,6 +6,6 @@
     <string name="btn_startGame">Start Game</string>
     <string name="txt_hint">Type Message</string>
     <string name="app_name">ThinkIt!</string>
-    <string name="image">Front Page Image</string>
-
+    <string name="image">BackGround Image</string>
+	<string name="empty">Balarie</string>
 </resources>
