@@ -8,6 +8,8 @@ public class GameTimer {
 
 	private GameFragment gameFragment;
 	private TextView timer;
+	private CountDownTimer count;
+	private int remainingTime;
 
 	public GameTimer(GameFragment gameFragment) {
 		this.gameFragment = gameFragment;
@@ -15,16 +17,27 @@ public class GameTimer {
 	}
 
 	public void start() {
-		CountDownTimer Count = new CountDownTimer(Constants.QUESTION_LIMIT_TIME, Constants.COUNTDOWN_INTERVAL) {
+		count = new CountDownTimer(Constants.QUESTION_LIMIT_TIME, Constants.COUNTDOWN_INTERVAL) {
 			public void onTick(long millisUntilFinished) {
+				remainingTime = (int) (millisUntilFinished / 1000);
 				timer.setText(String.valueOf(millisUntilFinished / 1000));
 			}
 
 			public void onFinish() {
+				remainingTime = 0;
 				timer.setText("Time Up!");
 				gameFragment.handleTimeExpired();
 			}
 		};
-		Count.start();
+		count.start();
+	}
+
+	public void cancel() {
+		remainingTime = Integer.parseInt(timer.getText().toString());
+		count.cancel();
+	}
+
+	public int getRemainingTime() {
+		return remainingTime;
 	}
 }

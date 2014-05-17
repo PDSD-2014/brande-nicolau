@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.IllegalFormatException;
 import java.util.Random;
 
 import ro.pub.cs.thinkit.R;
@@ -49,6 +50,7 @@ public class GameFragment extends Fragment implements Serializable {
 	private int myScoreSituation = 0;
 	private int opponentScoreSituation = 0;
 	private boolean roundEnded = false;
+	private boolean timerStarted = false;
 
 	private HashMap<Integer, Boolean> previousQuestions = new HashMap<Integer, Boolean>();
 
@@ -96,6 +98,10 @@ public class GameFragment extends Fragment implements Serializable {
 		return timer;
 	}
 
+	public void setQuestionId(int questionId) {
+		this.questionId = questionId;
+	}
+
 	public void populateFrameFields(int questionId) {
 		myScore.setText(String.valueOf(myScoreSituation) + " pts");
 		opponentScore.setText(String.valueOf(opponentScoreSituation) + " pts");
@@ -110,7 +116,11 @@ public class GameFragment extends Fragment implements Serializable {
 		answer3.setText(answers.get(2));
 		answer4.setText(answers.get(3));
 
-		gameTimer.start();
+		if (!timerStarted) {
+			gameTimer.start();
+			timerStarted = true;
+		}
+
 	}
 
 	public void sendId(String tag) {
@@ -129,23 +139,21 @@ public class GameFragment extends Fragment implements Serializable {
 	 * Calculates the round score.
 	 * 
 	 * @param correctAnswer
-	 *            1 if the correct answer was selected 0 if the incorrect answer
-	 *            was selected
+	 *            1 if the correct answer was selected, 0 if the incorrect
+	 *            answer was selected
 	 * @return
 	 */
 	private int calculateRoundScore(int correctAnswer) {
-		return correctAnswer * (Constants.QUESTION_SCORE * question.getDifficulty()); // TODO:
-																						// +
-		// remaining
-		// time;
+		int remainingTime = gameTimer.getRemainingTime();
+		return correctAnswer * (Constants.QUESTION_SCORE * question.getDifficulty() + remainingTime);
 	}
 
 	/**
 	 * Updates the gui with the current user's round results.
 	 * 
 	 * @param correctAnswer
-	 *            1 if the correct answer was selected 0 if the incorrect answer
-	 *            was selected
+	 *            1 if the correct answer was selected, 0 if the incorrect
+	 *            answer was selected
 	 */
 	private void updateMyRoundResult(int correctAnswer) {
 		roundEnded = true;
@@ -184,6 +192,10 @@ public class GameFragment extends Fragment implements Serializable {
 		}
 	}
 
+	private void cancelTimer() {
+		gameTimer.cancel();
+	}
+
 	private class ButtonListener implements View.OnClickListener {
 
 		@Override
@@ -200,6 +212,7 @@ public class GameFragment extends Fragment implements Serializable {
 					Log.v(TAG, "Wrong answer pressed.");
 					viewCorrectAnswer();
 				}
+				cancelTimer();
 			}
 		}
 
