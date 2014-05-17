@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ro.pub.cs.thinkit.R;
+import ro.pub.cs.thinkit.game.QuestionService;
 import ro.pub.cs.thinkit.gui.QuizFragment.MessageTarget;
 import ro.pub.cs.thinkit.gui.WiFiDirectServicesList.DeviceClickListener;
 import ro.pub.cs.thinkit.gui.WiFiDirectServicesList.WiFiDevicesAdapter;
@@ -45,8 +46,8 @@ import android.widget.TextView;
  * selecting a peer published service, the app initiates a Wi-Fi P2P (Direct)
  * connection with the peer. On successful connection with a peer advertising
  * the same service, the app opens up sockets to initiate a quiz.
- * {@code QuizFragment} is then added to the the main activity which manages
- * the interface and messaging needs for a quiz session.
+ * {@code QuizFragment} is then added to the the main activity which manages the
+ * interface and messaging needs for a quiz session.
  */
 public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClickListener, Handler.Callback,
 	MessageTarget, ConnectionInfoListener {
@@ -89,10 +90,15 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
     public void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	setContentView(R.layout.main);
+
+	QuestionService qs = QuestionService.getInstance(this);
+	qs.readQuestions();
+	Log.v("QUES", qs.getQuestions().get(5).toString());
+
 	statusTxtView = (TextView) findViewById(R.id.status_text);
 	image = (ImageView) findViewById(R.id.imageView1);
 	image.setBackgroundResource(R.drawable.brain2);
-	
+
 	intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
 	intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
 	intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
@@ -319,7 +325,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 	    }
 	} else {
 	    Log.d(TAG, "Connected as peer");
-			handler = new ClientSocketHandler(((MessageTarget) this).getHandler(), p2pInfo.groupOwnerAddress);
+	    handler = new ClientSocketHandler(((MessageTarget) this).getHandler(), p2pInfo.groupOwnerAddress);
 	    handler.start();
 	}
 	quizFragment = new QuizFragment();
