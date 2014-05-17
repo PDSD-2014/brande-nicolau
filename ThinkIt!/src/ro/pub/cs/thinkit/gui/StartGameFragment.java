@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 public class StartGameFragment extends Fragment implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -39,7 +40,13 @@ public class StartGameFragment extends Fragment implements Serializable {
 		return view;
 	}
 
-	public void alert(String name) {
+	/**
+	 * Alert window displayed when new game request occurs.
+	 *
+	 * @param name
+	 *            : opponent's name
+	 */
+	public void newChallenge(String name) {
 		new AlertDialog.Builder(view.getContext()).setTitle("New Challenge!")
 				.setMessage("Do you wana play a game with" + name + "?")
 				.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
@@ -54,6 +61,10 @@ public class StartGameFragment extends Fragment implements Serializable {
 						Log.v(TAG, "Rejected game request.");
 					}
 				}).setIcon(android.R.drawable.ic_dialog_alert).show();
+	}
+
+	public void challengeDenied() {
+		Toast.makeText(view.getContext(), Constants.CHALLENGE_DENIED, Toast.LENGTH_SHORT).show();
 	}
 
 	public void setNetworkManager(NetworkManager obj) {
