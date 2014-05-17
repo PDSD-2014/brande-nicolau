@@ -20,12 +20,12 @@ public class StartGameFragment extends Fragment implements Serializable {
 	private static final String TAG = "START_GAME";
 	private View view;
 	private NetworkManager networkManager;
-	private QuizFragment quizFragment;
+	private GameFragment gameFragment;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		Bundle args = getArguments();
-		quizFragment = (QuizFragment) args.getSerializable("quizFragment");
+		gameFragment = (GameFragment) args.getSerializable("gameFragment");
 		view = inflater.inflate(R.layout.start_game_fragment, container, false);
 		view.findViewById(R.id.startGame).setOnClickListener(new View.OnClickListener() {
 
@@ -53,7 +53,7 @@ public class StartGameFragment extends Fragment implements Serializable {
 				.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
 						networkManager.write(Constants.ACCEPT_GAME.getBytes());
-						getFragmentManager().beginTransaction().replace(R.id.container_root, quizFragment).commit();
+						getFragmentManager().beginTransaction().replace(R.id.container_root, gameFragment).commit();
 						Log.v(TAG, "Accepted game request.");
 					}
 				}).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {

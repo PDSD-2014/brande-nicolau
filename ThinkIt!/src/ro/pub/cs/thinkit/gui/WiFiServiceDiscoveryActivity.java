@@ -287,12 +287,20 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 			if (Constants.START_GAME.equals(readMessage)) {
 				startGameFragment.newChallenge("FooBar");
 			} else if (Constants.ACCEPT_GAME.equals(readMessage)) {
+				// send first question ID
+				gameFragment.sendId(Constants.FIRST_QUESTION);
 				getFragmentManager().beginTransaction().replace(R.id.container_root, gameFragment).commit();
 				Log.v(TAG, "Peer accepted my game request.");
 			} else if (Constants.CANCEL_GAME.equals(readMessage)) {
 				startGameFragment.challengeDenied();
 				Log.v(TAG, "Peer denied my game request.");
-			} else {
+			} else if (readMessage.startsWith(Constants.FIRST_QUESTION)) {
+				String id = readMessage.replaceAll("\\D+", "");
+				getFragmentManager().beginTransaction().replace(R.id.container_root, gameFragment).commit();
+				gameFragment.populateFrameFields(Integer.parseInt(id));
+			}
+
+			else {
 				quizFragment.pushMessage("Buddy: " + readMessage);
 			}
 			break;
@@ -301,7 +309,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 			Object obj = msg.obj;
 			startGameFragment.setNetworkManager((NetworkManager) obj);
 			quizFragment.setNetworkManager((NetworkManager) obj);
-
+			gameFragment.setNetworkManager((NetworkManager) obj);
 		}
 		return true;
 	}
@@ -350,7 +358,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 		// Passing as an argument a reference to the quizFragment so that we can
 		// go back to it.
 		Bundle bundle = new Bundle();
-		bundle.putSerializable("quizFragment", quizFragment);
+		bundle.putSerializable("gameFragment", gameFragment);
 		startGameFragment.setArguments(bundle);
 
 		getFragmentManager().beginTransaction().replace(R.id.container_root, startGameFragment).commit();

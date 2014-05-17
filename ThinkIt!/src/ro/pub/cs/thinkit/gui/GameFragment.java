@@ -3,25 +3,26 @@ package ro.pub.cs.thinkit.gui;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Random;
 
 import ro.pub.cs.thinkit.R;
 import ro.pub.cs.thinkit.game.Question;
 import ro.pub.cs.thinkit.game.QuestionService;
 import ro.pub.cs.thinkit.network.NetworkManager;
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView.FindListener;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+@SuppressLint("UseSparseArrays")
 public class GameFragment extends Fragment implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String TAG = "GAME";
@@ -39,20 +40,24 @@ public class GameFragment extends Fragment implements Serializable {
 	private TextView timer;
 	private ProgressBar myProgressBar;
 	private ProgressBar opponentProgressBar;
-	private int questionId = 5;
+	private int questionId;
+	private QuestionService qs = QuestionService.getInstance(getActivity());
 	private Question question;
 	private ArrayList<Button> buttons;
+
+	private HashMap<Integer, Boolean> previousQuestions = new HashMap<Integer, Boolean>();
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		view = inflater.inflate(R.layout.game_fragment, container, false);
 		connectWithFrameFields();
+		populateFrameFields(questionId);
+		
 		buttons = new ArrayList<Button>();
 		buttons.add(answer1);
 		buttons.add(answer2);
 		buttons.add(answer3);
 		buttons.add(answer4);
-		populateFrameFields(questionId);
 
 		ButtonListener buttonListener = new ButtonListener();
 		answer1.setOnClickListener(buttonListener);
@@ -81,8 +86,7 @@ public class GameFragment extends Fragment implements Serializable {
 		opponentProgressBar = (ProgressBar) view.findViewById(R.id.opponentProgress);
 	}
 
-	private void populateFrameFields(int questionId) {
-		QuestionService qs = QuestionService.getInstance(getActivity());
+	public void populateFrameFields(int questionId) {
 		question = qs.getQuestions().get(questionId);
 		questionText.setText(question.getQuestion());
 
@@ -93,6 +97,18 @@ public class GameFragment extends Fragment implements Serializable {
 		answer2.setText(answers.get(1));
 		answer3.setText(answers.get(2));
 		answer4.setText(answers.get(3));
+	}
+
+	public void sendId(String tag) {
+		Random rand = new Random();
+		int randInt;
+		do {
+			randInt = rand.nextInt(qs.getQuestions().size());
+		} while (previousQuestions.get(randInt) != null);
+		String message = tag + randInt;
+		networkManager.write(message.getBytes());
+		previousQuestions.put(randInt, true);
+		questionId = randInt;
 	}
 
 	private class ButtonListener implements View.OnClickListener {
