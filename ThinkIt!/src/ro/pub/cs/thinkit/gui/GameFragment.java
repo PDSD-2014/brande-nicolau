@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 import ro.pub.cs.thinkit.R;
+import ro.pub.cs.thinkit.game.Constants;
 import ro.pub.cs.thinkit.game.Question;
 import ro.pub.cs.thinkit.game.QuestionService;
 import ro.pub.cs.thinkit.network.NetworkManager;
@@ -44,6 +45,9 @@ public class GameFragment extends Fragment implements Serializable {
 	private QuestionService qs = QuestionService.getInstance(getActivity());
 	private Question question;
 	private ArrayList<Button> buttons;
+	private int myScoreSituation = 0;
+	private int opponentScoreSituation = 0;
+	private boolean roundEnded = false;
 
 	private HashMap<Integer, Boolean> previousQuestions = new HashMap<Integer, Boolean>();
 
@@ -52,7 +56,7 @@ public class GameFragment extends Fragment implements Serializable {
 		view = inflater.inflate(R.layout.game_fragment, container, false);
 		connectWithFrameFields();
 		populateFrameFields(questionId);
-		
+
 		buttons = new ArrayList<Button>();
 		buttons.add(answer1);
 		buttons.add(answer2);
@@ -87,6 +91,8 @@ public class GameFragment extends Fragment implements Serializable {
 	}
 
 	public void populateFrameFields(int questionId) {
+		myScore.setText(String.valueOf(myScoreSituation) + " pts");
+		opponentScore.setText(String.valueOf(opponentScoreSituation) + " pts");
 		question = qs.getQuestions().get(questionId);
 		questionText.setText(question.getQuestion());
 
@@ -111,21 +117,63 @@ public class GameFragment extends Fragment implements Serializable {
 		questionId = randInt;
 	}
 
+	/**
+	 * Calculates the round score.
+	 * 
+	 * @param correctAnswer
+	 *            1 if the correct answer was selected 0 if the incorrect answer
+	 *            was selected
+	 * @return
+	 */
+	private int calculateRoundScore(int correctAnswer) {
+		return correctAnswer * (Constants.QUESTION_SCORE * question.getDifficulty()); // TODO:
+																						// +
+		// remaining
+		// time;
+	}
+
+	/**
+	 * Updates the gui with the current user's round results.
+	 * 
+	 * @param correctAnswer
+	 *            1 if the correct answer was selected 0 if the incorrect answer
+	 *            was selected
+	 */
+	private void updateMyRoundResult(int correctAnswer) {
+		roundEnded = true;
+		myScoreSituation += calculateRoundScore(correctAnswer);
+		myScore.setText(String.valueOf(myScoreSituation) + " pts");
+	}
+
+	/**
+	 * Update the gui with the opponent's round result.
+	 * 
+	 * @param roundResult
+	 */
+	public void updateOpponentRoundResult(int roundResult) {
+		opponentScoreSituation += roundResult;
+		opponentScore.setText(String.valueOf(opponentScoreSituation) + " pts");
+	}
+
 	private class ButtonListener implements View.OnClickListener {
 
 		@Override
 		public void onClick(View v) {
-			Button selectedButton = (Button) v;
-			if (selectedButton.getText().equals(question.getCa())) {
-				selectedButton.setBackgroundColor(Color.GREEN);
-				Log.v(TAG, "Correct answer pressed.");
-			} else {
-				selectedButton.setBackgroundColor(Color.RED);
-				Log.v(TAG, "Wrong answer pressed.");
-				for (Button btn : buttons) {
-					if (btn.getText().equals(question.getCa())) {
-						btn.setBackgroundColor(Color.CYAN);
-						break;
+			if (roundEnded == false) {
+				Button selectedButton = (Button) v;
+				if (selectedButton.getText().equals(question.getCa())) {
+					selectedButton.setBackgroundColor(Color.GREEN);
+					updateMyRoundResult(1);
+					Log.v(TAG, "Correct answer pressed.");
+				} else {
+					selectedButton.setBackgroundColor(Color.RED);
+					updateMyRoundResult(0);
+					Log.v(TAG, "Wrong answer pressed.");
+					for (Button btn : buttons) {
+						if (btn.getText().equals(question.getCa())) {
+							btn.setBackgroundColor(Color.CYAN);
+							break;
+						}
 					}
 				}
 			}
