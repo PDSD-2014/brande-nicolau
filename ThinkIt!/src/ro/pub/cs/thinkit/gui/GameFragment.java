@@ -159,6 +159,7 @@ public class GameFragment extends Fragment implements Serializable {
 		roundEnded = true;
 		myScoreSituation += calculateRoundScore(correctAnswer);
 		myScore.setText(String.valueOf(myScoreSituation) + " pts");
+		myProgressBar.setProgress(myScoreSituation);
 	}
 
 	/**
@@ -169,6 +170,7 @@ public class GameFragment extends Fragment implements Serializable {
 	public void updateOpponentRoundResult(int roundResult) {
 		opponentScoreSituation += roundResult;
 		opponentScore.setText(String.valueOf(opponentScoreSituation) + " pts");
+		opponentProgressBar.setProgress(opponentScoreSituation);
 	}
 
 	/**
