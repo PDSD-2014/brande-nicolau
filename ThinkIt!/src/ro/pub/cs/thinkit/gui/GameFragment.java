@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.IllegalFormatException;
 import java.util.Random;
 
 import ro.pub.cs.thinkit.R;
@@ -60,6 +59,8 @@ public class GameFragment extends Fragment implements Serializable {
 		connectWithFrameFields();
 		populateFrameFields(questionId);
 
+		myName.setText(Constants.MY_NAME);
+		opponentName.setText(Constants.OPPONENT_NAME);
 		buttons = new ArrayList<Button>();
 		buttons.add(answer1);
 		buttons.add(answer2);

@@ -49,7 +49,7 @@ public class StartGameFragment extends Fragment implements Serializable {
 	 */
 	public void newChallenge(String name) {
 		new AlertDialog.Builder(view.getContext()).setTitle("New Challenge!")
-				.setMessage("Do you wana play a game with" + name + "?")
+				.setMessage("Do you wana play a game with " + name + "?")
 				.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
 						networkManager.write(Constants.ACCEPT_GAME.getBytes());

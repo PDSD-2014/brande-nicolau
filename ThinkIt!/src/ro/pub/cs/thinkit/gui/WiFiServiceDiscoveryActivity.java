@@ -79,6 +79,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 
 	private TextView statusTxtView;
 	private ImageView image;
+	private String opponent = Constants.OPPONENT_NAME;
 
 	public Handler getHandler() {
 		return handler;
@@ -198,6 +199,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 						service.serviceRegistrationType = registrationType;
 						adapter.add(service);
 						adapter.notifyDataSetChanged();
+						opponent = srcDevice.deviceName;
 						Log.d(TAG, "onBonjourServiceAvailable " + instanceName);
 					}
 				}
@@ -212,6 +214,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 			public void onDnsSdTxtRecordAvailable(String fullDomainName, Map<String, String> record,
 					WifiP2pDevice device) {
 				Log.d(TAG, device.deviceName + " is " + record.get(TXTRECORD_PROP_AVAILABLE));
+				opponent = device.deviceName;
 			}
 		});
 
@@ -285,7 +288,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 			String readMessage = new String(readBuf, 0, msg.arg1);
 			Log.d(TAG, readMessage);
 			if (Constants.START_GAME.equals(readMessage)) {
-				startGameFragment.newChallenge("FooBar");
+				startGameFragment.newChallenge(opponent);
 			} else if (Constants.ACCEPT_GAME.equals(readMessage)) {
 				// send first question ID
 				gameFragment.sendId(Constants.FIRST_QUESTION);
