@@ -105,6 +105,9 @@ public class GameFragment extends Fragment implements Serializable {
 		timer = (TextView) view.findViewById(R.id.timer);
 		myProgressBar = (ProgressBar) view.findViewById(R.id.myProgress);
 		opponentProgressBar = (ProgressBar) view.findViewById(R.id.opponentProgress);
+
+		resetGame();
+
 		gameTimer = new GameTimer(this);
 	}
 
@@ -211,6 +214,7 @@ public class GameFragment extends Fragment implements Serializable {
 					if (!displayed) {
 						displayResult(getMatchResult());
 						displayed = true;
+						gameMaster = false;
 					}
 				}
 			}
@@ -236,6 +240,7 @@ public class GameFragment extends Fragment implements Serializable {
 					if (!displayed) {
 						displayResult(getMatchResult());
 						displayed = true;
+						gameMaster = false;
 					}
 				}
 			}
@@ -248,6 +253,23 @@ public class GameFragment extends Fragment implements Serializable {
 	 */
 	private boolean isFinalRound() {
 		return previousQuestions.size() == Constants.NO_ROUNDS;
+	}
+
+	private void resetGame() {
+		myScore.setText("0 pts");
+		opponentName.setText("0 pts");
+		myProgressBar.setProgress(0);
+		opponentProgressBar.setProgress(0);
+		myScoreSituation = 0;
+		opponentScoreSituation = 0;
+		iEndedRound = false;
+		opponentEndedRound = false;
+		displayed = false;
+		timerStarted = false;
+	}
+
+	public void clearPreviousQuestions() {
+		previousQuestions.clear();
 	}
 
 	/**

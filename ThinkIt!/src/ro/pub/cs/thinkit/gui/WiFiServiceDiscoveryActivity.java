@@ -292,6 +292,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 			} else if (Constants.ACCEPT_GAME.equals(readMessage)) {
 				// send first question ID
 				gameFragment.setGameMaster();
+				gameFragment.clearPreviousQuestions();
 				gameFragment.sendId(Constants.FIRST_QUESTION);
 				getFragmentManager().beginTransaction().replace(R.id.container_root, gameFragment).commit();
 				Log.v(TAG, "Peer accepted my game request.");
