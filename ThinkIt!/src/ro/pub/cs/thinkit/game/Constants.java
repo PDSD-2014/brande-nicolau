@@ -17,4 +17,5 @@ public class Constants {
 	public static final int QUESTION_SCORE = 10;
 	public static final int QUESTION_LIMIT_TIME = 10000;
 	public static final int COUNTDOWN_INTERVAL = 1000;
+	public static final int NO_ROUNDS = 4;
 }

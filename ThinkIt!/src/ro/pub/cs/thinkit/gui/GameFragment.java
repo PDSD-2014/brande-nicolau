@@ -12,7 +12,9 @@ import ro.pub.cs.thinkit.game.Question;
 import ro.pub.cs.thinkit.game.QuestionService;
 import ro.pub.cs.thinkit.network.NetworkManager;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -58,9 +60,12 @@ public class GameFragment extends Fragment implements Serializable {
 
 	private Handler handler = new Handler();
 	private HashMap<Integer, Boolean> previousQuestions = new HashMap<Integer, Boolean>();
+	private StartGameFragment startFragment;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		Bundle args = getArguments();
+		startFragment = (StartGameFragment) args.getSerializable("startFragment");
 		view = inflater.inflate(R.layout.game_fragment, container, false);
 		connectWithFrameFields();
 		populateFrameFields(questionId);
@@ -190,7 +195,7 @@ public class GameFragment extends Fragment implements Serializable {
 
 		handler.postDelayed(new Runnable() {
 			public void run() {
-				if (gameMaster() && roundFinished()) {
+				if (gameMaster() && roundFinished() && !isFinalRound()) {
 					initiateNextRound();
 				}
 			}
@@ -204,17 +209,60 @@ public class GameFragment extends Fragment implements Serializable {
 	 */
 	public void updateOpponentRoundResult(int roundResult) {
 		opponentEndedRound = true;
-		opponentScoreSituation += roundResult;
+		opponentScoreSituation = roundResult;
 		opponentScore.setText(String.valueOf(opponentScoreSituation) + " pts");
 		opponentProgressBar.setProgress(opponentScoreSituation);
 
 		handler.postDelayed(new Runnable() {
 			public void run() {
-				if (gameMaster() && roundFinished()) {
+				if (gameMaster() && roundFinished() && !isFinalRound()) {
 					initiateNextRound();
 				}
 			}
 		}, 2000);
+	}
+	
+	/**
+	 * 
+	 * @return true if this is the final round, false otherwise.
+	 */
+	private boolean isFinalRound() {
+		return previousQuestions.size() == Constants.NO_ROUNDS;
+	}
+	
+	/**
+	 * 
+	 * @return true if the game has ended, false otherwise.
+	 */
+	private boolean gameFinished() {
+		return roundFinished() && isFinalRound();
+	}
+
+	/**
+	 * Returns string based on score situation.
+	 */
+	private String getMatchResult() {
+		if (myScoreSituation < opponentScoreSituation) {
+			return "You Lost!";
+		} else if (myScoreSituation > opponentScoreSituation) {
+			return "You Won!";
+		} else {
+			return "It's a tie!";
+		}
+	}
+
+	/**
+	 * Shows a pop-up with the match results: Winner, Loser or Tie.
+	 * 
+	 * @param message
+	 */
+	public void displayResult(String message) {
+		new AlertDialog.Builder(view.getContext()).setTitle("Game Results").setMessage(message)
+				.setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						getFragmentManager().beginTransaction().replace(R.id.container_root, startFragment).commit();
+					}
+				}).setIcon(android.R.drawable.ic_dialog_alert).show();
 	}
 
 	/**
@@ -260,12 +308,12 @@ public class GameFragment extends Fragment implements Serializable {
 	}
 
 	/**
-	 * Colors the right answer in CYAN.
+	 * Colors the right answer in GREEN.
 	 */
 	private void viewCorrectAnswer() {
 		for (Button btn : buttons) {
 			if (btn.getText().equals(question.getCa())) {
-				btn.setBackgroundColor(Color.CYAN);
+				btn.setBackgroundColor(Color.GREEN);
 				break;
 			}
 		}

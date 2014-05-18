@@ -370,6 +370,10 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 
 		// Setting the start game screen.
 		startGameFragment = new StartGameFragment();
+		Bundle gameBundle = new Bundle();
+		gameBundle.putSerializable("startFragment", startGameFragment);
+		gameFragment.setArguments(gameBundle);
+
 		// Passing as an argument a reference to the quizFragment so that we can
 		// go back to it.
 		Bundle bundle = new Bundle();
