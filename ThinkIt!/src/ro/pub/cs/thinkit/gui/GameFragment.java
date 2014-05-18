@@ -16,6 +16,7 @@ import android.app.Fragment;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,6 +56,7 @@ public class GameFragment extends Fragment implements Serializable {
 	private boolean timerStarted = false;
 	private Drawable originalButtonColor;
 
+	private Handler handler = new Handler();
 	private HashMap<Integer, Boolean> previousQuestions = new HashMap<Integer, Boolean>();
 
 	@Override
@@ -63,7 +65,7 @@ public class GameFragment extends Fragment implements Serializable {
 		connectWithFrameFields();
 		populateFrameFields(questionId);
 		originalButtonColor = answer1.getBackground();
-		
+
 		myName.setText(Constants.MY_NAME);
 		opponentName.setText(Constants.OPPONENT_NAME);
 		buttons = new ArrayList<Button>();
@@ -183,13 +185,16 @@ public class GameFragment extends Fragment implements Serializable {
 		myProgressBar.setProgress(myScoreSituation);
 		networkManager.write((Constants.REPORTED_ROUND_RESULT + myScoreSituation).getBytes());
 
-//		try {
-//			Thread.sleep(1500);
-//		} catch (InterruptedException e) {
-//		}
-		if (gameMaster() && roundFinished()) {
-			initiateNextRound();
-		}
+		if (timerStarted)
+			cancelTimer();
+
+		handler.postDelayed(new Runnable() {
+			public void run() {
+				if (gameMaster() && roundFinished()) {
+					initiateNextRound();
+				}
+			}
+		}, 2000);
 	}
 
 	/**
@@ -203,9 +208,13 @@ public class GameFragment extends Fragment implements Serializable {
 		opponentScore.setText(String.valueOf(opponentScoreSituation) + " pts");
 		opponentProgressBar.setProgress(opponentScoreSituation);
 
-		if (gameMaster() && roundFinished()) {
-			initiateNextRound();
-		}
+		handler.postDelayed(new Runnable() {
+			public void run() {
+				if (gameMaster() && roundFinished()) {
+					initiateNextRound();
+				}
+			}
+		}, 2000);
 	}
 
 	/**
@@ -215,12 +224,12 @@ public class GameFragment extends Fragment implements Serializable {
 		timerStarted = false;
 		iEndedRound = false;
 		opponentEndedRound = false;
-		
+
 		answer1.setBackground(originalButtonColor);
 		answer2.setBackground(originalButtonColor);
 		answer3.setBackground(originalButtonColor);
 		answer4.setBackground(originalButtonColor);
-		
+
 	}
 
 	/**
@@ -287,7 +296,6 @@ public class GameFragment extends Fragment implements Serializable {
 					updateMyRoundResult(0);
 					Log.v(TAG, "Wrong answer pressed.");
 				}
-				cancelTimer();
 			}
 		}
 

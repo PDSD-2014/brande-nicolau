@@ -61,8 +61,10 @@ public class ChatFragment extends Fragment implements Serializable {
 	}
 
 	public void pushMessage(String readMessage) {
-		adapter.add(readMessage);
-		adapter.notifyDataSetChanged();
+		if (adapter != null) {
+			adapter.add(readMessage);
+			adapter.notifyDataSetChanged();
+		}
 	}
 
 	/**
