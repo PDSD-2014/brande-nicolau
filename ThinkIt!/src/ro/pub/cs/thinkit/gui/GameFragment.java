@@ -54,6 +54,7 @@ public class GameFragment extends Fragment implements Serializable {
 	private int opponentScoreSituation = 0;
 	private boolean iEndedRound = false;
 	private boolean opponentEndedRound = false;
+	private boolean displayed = false;
 	private boolean gameMaster = false;
 	private boolean timerStarted = false;
 	private Drawable originalButtonColor;
@@ -164,6 +165,15 @@ public class GameFragment extends Fragment implements Serializable {
 	}
 
 	/**
+	 * Adds question id to map of played questions.
+	 * 
+	 * @param id
+	 */
+	public void indexQuestion(int id) {
+		previousQuestions.put(id, true);
+	}
+
+	/**
 	 * Calculates the round score.
 	 * 
 	 * @param correctAnswer
@@ -197,6 +207,11 @@ public class GameFragment extends Fragment implements Serializable {
 			public void run() {
 				if (gameMaster() && roundFinished() && !isFinalRound()) {
 					initiateNextRound();
+				} else if (gameFinished()) {
+					if (!displayed) {
+						displayResult(getMatchResult());
+						displayed = true;
+					}
 				}
 			}
 		}, 2000);
@@ -217,11 +232,16 @@ public class GameFragment extends Fragment implements Serializable {
 			public void run() {
 				if (gameMaster() && roundFinished() && !isFinalRound()) {
 					initiateNextRound();
+				} else if (gameFinished()) {
+					if (!displayed) {
+						displayResult(getMatchResult());
+						displayed = true;
+					}
 				}
 			}
 		}, 2000);
 	}
-	
+
 	/**
 	 * 
 	 * @return true if this is the final round, false otherwise.
@@ -229,7 +249,7 @@ public class GameFragment extends Fragment implements Serializable {
 	private boolean isFinalRound() {
 		return previousQuestions.size() == Constants.NO_ROUNDS;
 	}
-	
+
 	/**
 	 * 
 	 * @return true if the game has ended, false otherwise.

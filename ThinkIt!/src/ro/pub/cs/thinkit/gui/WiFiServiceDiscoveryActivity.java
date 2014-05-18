@@ -302,10 +302,12 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 				String id = readMessage.replaceAll("\\D+", "");
 				getFragmentManager().beginTransaction().replace(R.id.container_root, gameFragment).commit();
 				gameFragment.populateFrameFields(Integer.parseInt(id));
+				gameFragment.indexQuestion(Integer.parseInt(id));
 			} else if (readMessage.startsWith(Constants.RENEW_QUESTION)) {
 				String id = readMessage.replaceAll("\\D+", "");
 				gameFragment.resetRoundData();
 				gameFragment.populateFrameFields(Integer.parseInt(id));
+				gameFragment.indexQuestion(Integer.parseInt(id));
 			} else if (readMessage.startsWith(Constants.REPORTED_ROUND_RESULT)) {
 				int reportedResult = Integer.parseInt(readMessage.replaceAll("\\D+", ""));
 				gameFragment.updateOpponentRoundResult(reportedResult);
