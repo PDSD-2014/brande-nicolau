@@ -3,11 +3,28 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
-    <Button
-        android:id="@+id/startGame"
-        android:layout_width="202dp"
-        android:layout_height="78dp"
-        android:layout_gravity="center_vertical|center_horizontal"
-        android:text="@string/btn_startGame" />
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"        android:layout_gravity="center_vertical|center_horizontal" >
+
+        <Button
+            android:id="@+id/startGame"
+            android:layout_width="202dp"
+            android:layout_height="78dp"
+            android:text="@string/btn_startGame" />
+
+        <Button
+            android:id="@+id/startChat"
+            android:layout_width="202dp"
+            android:layout_height="78dp"
+            android:layout_below="@id/startGame"
+            android:text="@string/btn_startChat" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/.PHONY"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+    </RelativeLayout>
 
 </FrameLayout>

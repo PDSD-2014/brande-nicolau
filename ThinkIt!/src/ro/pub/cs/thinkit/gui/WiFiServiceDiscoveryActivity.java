@@ -7,7 +7,7 @@ import java.util.Map;
 import ro.pub.cs.thinkit.R;
 import ro.pub.cs.thinkit.game.Constants;
 import ro.pub.cs.thinkit.game.QuestionService;
-import ro.pub.cs.thinkit.gui.QuizFragment.MessageTarget;
+import ro.pub.cs.thinkit.gui.ChatFragment.MessageTarget;
 import ro.pub.cs.thinkit.gui.WiFiDirectServicesList.DeviceClickListener;
 import ro.pub.cs.thinkit.gui.WiFiDirectServicesList.WiFiDevicesAdapter;
 import ro.pub.cs.thinkit.network.ClientSocketHandler;
@@ -72,7 +72,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 	private WifiP2pDnsSdServiceRequest serviceRequest;
 
 	private Handler handler = new Handler(this);
-	private QuizFragment quizFragment;
+	private ChatFragment chatFragment;
 	private StartGameFragment startGameFragment;
 	private GameFragment gameFragment;
 	private WiFiDirectServicesList servicesList;
@@ -294,7 +294,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 				gameFragment.sendId(Constants.FIRST_QUESTION);
 				getFragmentManager().beginTransaction().replace(R.id.container_root, gameFragment).commit();
 				Log.v(TAG, "Peer accepted my game request.");
-			} else if (Constants.CANCEL_GAME.equals(readMessage)) {
+			} else if (Constants.CANCEL_REQUEST.equals(readMessage)) {
 				startGameFragment.challengeDenied();
 				Log.v(TAG, "Peer denied my game request.");
 			} else if (readMessage.startsWith(Constants.FIRST_QUESTION)) {
@@ -307,15 +307,21 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 			} else if (readMessage.startsWith(Constants.REPORTED_ROUND_RESULT)) {
 				int reportedResult = Integer.parseInt(readMessage.replaceAll("\\D+", ""));
 				gameFragment.updateOpponentRoundResult(reportedResult);
+			} else if (readMessage.startsWith(Constants.CHAT_REQUEST_SENT)) {
+				startGameFragment.newChat(opponent);
+			} else if (Constants.ACCEPT_CHAT.equals(readMessage)) {
+				// send first question ID
+				getFragmentManager().beginTransaction().replace(R.id.container_root, chatFragment).commit();
+				Log.v(TAG, "Peer accepted my chat request.");
 			} else {
-				quizFragment.pushMessage("Buddy: " + readMessage);
+				chatFragment.pushMessage("Buddy: " + readMessage);
 			}
 			break;
 
 		case MY_HANDLE:
 			Object obj = msg.obj;
 			startGameFragment.setNetworkManager((NetworkManager) obj);
-			quizFragment.setNetworkManager((NetworkManager) obj);
+			chatFragment.setNetworkManager((NetworkManager) obj);
 			gameFragment.setNetworkManager((NetworkManager) obj);
 		}
 		return true;
@@ -357,7 +363,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 			handler = new ClientSocketHandler(((MessageTarget) this).getHandler(), p2pInfo.groupOwnerAddress);
 			handler.start();
 		}
-		quizFragment = new QuizFragment();
+		chatFragment = new ChatFragment();
 		gameFragment = new GameFragment();
 
 		// Setting the start game screen.
@@ -366,6 +372,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 		// go back to it.
 		Bundle bundle = new Bundle();
 		bundle.putSerializable("gameFragment", gameFragment);
+		bundle.putSerializable("chatFragment", chatFragment);
 		startGameFragment.setArguments(bundle);
 
 		getFragmentManager().beginTransaction().replace(R.id.container_root, startGameFragment).commit();

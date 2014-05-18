@@ -21,7 +21,7 @@ import android.widget.TextView;
  * This fragment handles chat related UI which includes a list view for messages
  * and a message entry field with send button.
  */
-public class QuizFragment extends Fragment implements Serializable {
+public class ChatFragment extends Fragment implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private View view;
 	private NetworkManager networkManager;
@@ -32,7 +32,7 @@ public class QuizFragment extends Fragment implements Serializable {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		view = inflater.inflate(R.layout.fragment_quiz, container, false);
+		view = inflater.inflate(R.layout.chat_fragment, container, false);
 		chatLine = (TextView) view.findViewById(R.id.txtChatLine);
 		listView = (ListView) view.findViewById(android.R.id.list);
 		adapter = new MessageAdapter(getActivity(), android.R.id.text1, items);

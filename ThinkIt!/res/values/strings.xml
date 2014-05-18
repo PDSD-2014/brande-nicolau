@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="finding_service">Finding local services</string>
@@ -8,4 +7,5 @@
     <string name="app_name">ThinkIt!</string>
     <string name="image">BackGround Image</string>
 	<string name="empty">Balarie</string>
+	<string name="btn_startChat">Chat</string>
 </resources>

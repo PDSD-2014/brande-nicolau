@@ -21,11 +21,13 @@ public class StartGameFragment extends Fragment implements Serializable {
 	private View view;
 	private NetworkManager networkManager;
 	private GameFragment gameFragment;
+	private ChatFragment chatFragment;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		Bundle args = getArguments();
 		gameFragment = (GameFragment) args.getSerializable("gameFragment");
+		chatFragment = (ChatFragment) args.getSerializable("chatFragment");
 		view = inflater.inflate(R.layout.start_game_fragment, container, false);
 		view.findViewById(R.id.startGame).setOnClickListener(new View.OnClickListener() {
 
@@ -38,6 +40,19 @@ public class StartGameFragment extends Fragment implements Serializable {
 				}
 			}
 		});
+
+		view.findViewById(R.id.startChat).setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				if (networkManager != null) {
+					networkManager.write(Constants.CHAT_REQUEST_SENT.getBytes());
+					showToast(Constants.CHAT_REQUEST_SENT);
+					Log.v(TAG, "I want to start a chat.");
+				}
+			}
+		});
+
 		return view;
 	}
 
@@ -49,7 +64,7 @@ public class StartGameFragment extends Fragment implements Serializable {
 	 */
 	public void newChallenge(String name) {
 		new AlertDialog.Builder(view.getContext()).setTitle("New Challenge!")
-				.setMessage("Do you wana play a game with " + name + "?")
+				.setMessage("Do you wanna play a game with " + name + "?")
 				.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
 						networkManager.write(Constants.ACCEPT_GAME.getBytes());
@@ -58,8 +73,25 @@ public class StartGameFragment extends Fragment implements Serializable {
 					}
 				}).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-						networkManager.write(Constants.CANCEL_GAME.getBytes());
+						networkManager.write(Constants.CANCEL_REQUEST.getBytes());
 						Log.v(TAG, "Rejected game request.");
+					}
+				}).setIcon(android.R.drawable.ic_dialog_alert).show();
+	}
+
+	public void newChat(String name) {
+		new AlertDialog.Builder(view.getContext()).setTitle("New Chat!")
+				.setMessage("Do you wanna chat with " + name + "?")
+				.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						networkManager.write(Constants.ACCEPT_CHAT.getBytes());
+						getFragmentManager().beginTransaction().replace(R.id.container_root, chatFragment).commit();
+						Log.v(TAG, "Accepted chat request.");
+					}
+				}).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						networkManager.write(Constants.CANCEL_REQUEST.getBytes());
+						Log.v(TAG, "Rejected request.");
 					}
 				}).setIcon(android.R.drawable.ic_dialog_alert).show();
 	}
