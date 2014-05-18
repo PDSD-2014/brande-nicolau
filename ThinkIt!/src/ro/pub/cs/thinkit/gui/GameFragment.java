@@ -161,6 +161,7 @@ public class GameFragment extends Fragment implements Serializable {
 		myScoreSituation += calculateRoundScore(correctAnswer);
 		myScore.setText(String.valueOf(myScoreSituation) + " pts");
 		myProgressBar.setProgress(myScoreSituation);
+		networkManager.write((Constants.REPORTED_ROUND_RESULT + myScoreSituation).getBytes());
 	}
 
 	/**

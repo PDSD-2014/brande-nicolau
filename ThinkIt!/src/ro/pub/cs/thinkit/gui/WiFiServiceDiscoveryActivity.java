@@ -304,6 +304,9 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 			} else if (readMessage.startsWith(Constants.RENEW_QUESTION)) {
 				String id = readMessage.replaceAll("\\D+", "");
 				gameFragment.populateFrameFields(Integer.parseInt(id));
+			} else if (readMessage.startsWith(Constants.REPORTED_ROUND_RESULT)) {
+				int reportedResult = Integer.parseInt(readMessage.replaceAll("\\D+", ""));
+				gameFragment.updateOpponentRoundResult(reportedResult);
 			} else {
 				quizFragment.pushMessage("Buddy: " + readMessage);
 			}
