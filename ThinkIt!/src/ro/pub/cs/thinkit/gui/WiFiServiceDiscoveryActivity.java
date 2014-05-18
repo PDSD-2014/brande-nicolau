@@ -291,6 +291,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 				startGameFragment.newChallenge(opponent);
 			} else if (Constants.ACCEPT_GAME.equals(readMessage)) {
 				// send first question ID
+				gameFragment.setGameMaster();
 				gameFragment.sendId(Constants.FIRST_QUESTION);
 				getFragmentManager().beginTransaction().replace(R.id.container_root, gameFragment).commit();
 				Log.v(TAG, "Peer accepted my game request.");
@@ -303,6 +304,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 				gameFragment.populateFrameFields(Integer.parseInt(id));
 			} else if (readMessage.startsWith(Constants.RENEW_QUESTION)) {
 				String id = readMessage.replaceAll("\\D+", "");
+				gameFragment.resetRoundData();
 				gameFragment.populateFrameFields(Integer.parseInt(id));
 			} else if (readMessage.startsWith(Constants.REPORTED_ROUND_RESULT)) {
 				int reportedResult = Integer.parseInt(readMessage.replaceAll("\\D+", ""));

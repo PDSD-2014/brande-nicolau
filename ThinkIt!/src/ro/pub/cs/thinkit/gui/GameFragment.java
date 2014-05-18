@@ -14,6 +14,7 @@ import ro.pub.cs.thinkit.network.NetworkManager;
 import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -48,8 +49,11 @@ public class GameFragment extends Fragment implements Serializable {
 	private ArrayList<Button> buttons;
 	private int myScoreSituation = 0;
 	private int opponentScoreSituation = 0;
-	private boolean roundEnded = false;
+	private boolean iEndedRound = false;
+	private boolean opponentEndedRound = false;
+	private boolean gameMaster = false;
 	private boolean timerStarted = false;
+	private Drawable originalButtonColor;
 
 	private HashMap<Integer, Boolean> previousQuestions = new HashMap<Integer, Boolean>();
 
@@ -58,7 +62,8 @@ public class GameFragment extends Fragment implements Serializable {
 		view = inflater.inflate(R.layout.game_fragment, container, false);
 		connectWithFrameFields();
 		populateFrameFields(questionId);
-
+		originalButtonColor = answer1.getBackground();
+		
 		myName.setText(Constants.MY_NAME);
 		opponentName.setText(Constants.OPPONENT_NAME);
 		buttons = new ArrayList<Button>();
@@ -124,6 +129,21 @@ public class GameFragment extends Fragment implements Serializable {
 
 	}
 
+	/**
+	 * Sets the user as game master.
+	 */
+	public void setGameMaster() {
+		gameMaster = true;
+	}
+
+	/**
+	 * Informs the user if he is the game master.
+	 * 
+	 */
+	private boolean gameMaster() {
+		return gameMaster;
+	}
+
 	public void sendId(String tag) {
 		Random rand = new Random();
 		int randInt;
@@ -157,11 +177,19 @@ public class GameFragment extends Fragment implements Serializable {
 	 *            answer was selected
 	 */
 	private void updateMyRoundResult(int correctAnswer) {
-		roundEnded = true;
+		iEndedRound = true;
 		myScoreSituation += calculateRoundScore(correctAnswer);
 		myScore.setText(String.valueOf(myScoreSituation) + " pts");
 		myProgressBar.setProgress(myScoreSituation);
 		networkManager.write((Constants.REPORTED_ROUND_RESULT + myScoreSituation).getBytes());
+
+//		try {
+//			Thread.sleep(1500);
+//		} catch (InterruptedException e) {
+//		}
+		if (gameMaster() && roundFinished()) {
+			initiateNextRound();
+		}
 	}
 
 	/**
@@ -170,16 +198,54 @@ public class GameFragment extends Fragment implements Serializable {
 	 * @param roundResult
 	 */
 	public void updateOpponentRoundResult(int roundResult) {
+		opponentEndedRound = true;
 		opponentScoreSituation += roundResult;
 		opponentScore.setText(String.valueOf(opponentScoreSituation) + " pts");
 		opponentProgressBar.setProgress(opponentScoreSituation);
+
+		if (gameMaster() && roundFinished()) {
+			initiateNextRound();
+		}
+	}
+
+	/**
+	 * Resets the round's data.
+	 */
+	public void resetRoundData() {
+		timerStarted = false;
+		iEndedRound = false;
+		opponentEndedRound = false;
+		
+		answer1.setBackground(originalButtonColor);
+		answer2.setBackground(originalButtonColor);
+		answer3.setBackground(originalButtonColor);
+		answer4.setBackground(originalButtonColor);
+		
+	}
+
+	/**
+	 * Informs the user if both users have answered this round's question.
+	 * 
+	 */
+	private boolean roundFinished() {
+		return iEndedRound && opponentEndedRound;
+	}
+
+	/**
+	 * A new round is initiated.
+	 */
+	private void initiateNextRound() {
+		sendId(Constants.RENEW_QUESTION);
+		resetRoundData();
+		populateFrameFields(questionId);
 	}
 
 	/**
 	 * Updates the GUI when the time is exceeded.
 	 */
 	public void handleTimeExpired() {
-		roundEnded = true;
+		iEndedRound = true;
+		timerStarted = false;
 		viewCorrectAnswer();
 		updateMyRoundResult(0);
 	}
@@ -196,15 +262,20 @@ public class GameFragment extends Fragment implements Serializable {
 		}
 	}
 
+	/**
+	 * Stops the timer.
+	 */
 	private void cancelTimer() {
 		gameTimer.cancel();
+		/* Reset the timer for the new round. */
+		timerStarted = false;
 	}
 
 	private class ButtonListener implements View.OnClickListener {
 
 		@Override
 		public void onClick(View v) {
-			if (roundEnded == false) {
+			if (iEndedRound == false) {
 				Button selectedButton = (Button) v;
 				if (selectedButton.getText().equals(question.getCa())) {
 					selectedButton.setBackgroundColor(Color.GREEN);
@@ -212,9 +283,9 @@ public class GameFragment extends Fragment implements Serializable {
 					Log.v(TAG, "Correct answer pressed.");
 				} else {
 					selectedButton.setBackgroundColor(Color.RED);
+					viewCorrectAnswer();
 					updateMyRoundResult(0);
 					Log.v(TAG, "Wrong answer pressed.");
-					viewCorrectAnswer();
 				}
 				cancelTimer();
 			}
