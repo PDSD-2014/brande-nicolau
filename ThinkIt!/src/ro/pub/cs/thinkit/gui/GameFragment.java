@@ -68,7 +68,7 @@ public class GameFragment extends Fragment implements Serializable {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		Bundle args = getArguments();
-		startFragment = (StartFragment) args.getSerializable("startFragment");
+		startFragment = (StartFragment) args.getSerializable(Constants.START_FRAGMENT);
 		view = inflater.inflate(R.layout.game_fragment, container, false);
 
 		connectWithFrameFields();
@@ -301,7 +301,8 @@ public class GameFragment extends Fragment implements Serializable {
 		new AlertDialog.Builder(view.getContext()).setTitle("Game Results").setMessage(message)
 				.setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-						getFragmentManager().beginTransaction().replace(R.id.container_root, startFragment).commit();
+						getFragmentManager().beginTransaction()
+								.replace(R.id.container_root, startFragment, Constants.START_FRAGMENT).commit();
 						resetGame();
 					}
 				}).setIcon(android.R.drawable.ic_dialog_alert).show();

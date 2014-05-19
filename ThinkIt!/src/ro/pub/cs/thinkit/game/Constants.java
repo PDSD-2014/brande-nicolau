@@ -1,6 +1,11 @@
 package ro.pub.cs.thinkit.game;
 
 public class Constants {
+
+	public static final String START_FRAGMENT = "startFragment";
+	public static final String GAME_FRAGMENT = "gameFragment";
+	public static final String CHAT_FRAGMENT = "chatFragment";
+
 	public static final String START_GAME = "start_game";
 	public static final String START_CHAT = "start_chat";
 	public static final String ACCEPT_GAME = "accept_game";
@@ -18,4 +23,6 @@ public class Constants {
 	public static final int QUESTION_LIMIT_TIME = 10000;
 	public static final int COUNTDOWN_INTERVAL = 1000;
 	public static final int NO_ROUNDS = 4;
+	public static final String LEAVE_GAME = "leave_game";
+	public static final String LEAVE_CHAT = "leave_chat";
 }

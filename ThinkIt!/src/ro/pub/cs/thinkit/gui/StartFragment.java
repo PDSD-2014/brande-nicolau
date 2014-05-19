@@ -26,8 +26,8 @@ public class StartFragment extends Fragment implements Serializable {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		Bundle args = getArguments();
-		gameFragment = (GameFragment) args.getSerializable("gameFragment");
-		chatFragment = (ChatFragment) args.getSerializable("chatFragment");
+		gameFragment = (GameFragment) args.getSerializable(Constants.GAME_FRAGMENT);
+		chatFragment = (ChatFragment) args.getSerializable(Constants.CHAT_FRAGMENT);
 		view = inflater.inflate(R.layout.start_game_fragment, container, false);
 		view.findViewById(R.id.startGame).setOnClickListener(new View.OnClickListener() {
 
@@ -68,7 +68,8 @@ public class StartFragment extends Fragment implements Serializable {
 				.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
 						networkManager.write(Constants.ACCEPT_GAME.getBytes());
-						getFragmentManager().beginTransaction().replace(R.id.container_root, gameFragment).commit();
+						getFragmentManager().beginTransaction()
+								.replace(R.id.container_root, gameFragment, Constants.GAME_FRAGMENT).commit();
 						Log.v(TAG, "Accepted game request.");
 					}
 				}).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -85,7 +86,8 @@ public class StartFragment extends Fragment implements Serializable {
 				.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
 						networkManager.write(Constants.ACCEPT_CHAT.getBytes());
-						getFragmentManager().beginTransaction().replace(R.id.container_root, chatFragment).commit();
+						getFragmentManager().beginTransaction()
+								.replace(R.id.container_root, chatFragment, Constants.CHAT_FRAGMENT).commit();
 						Log.v(TAG, "Accepted chat request.");
 					}
 				}).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {

@@ -70,6 +70,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 	private Channel channel;
 	private BroadcastReceiver receiver = null;
 	private WifiP2pDnsSdServiceRequest serviceRequest;
+	private NetworkManager networkManager;
 
 	private Handler handler = new Handler(this);
 	private StartFragment startFragment;
@@ -167,6 +168,22 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 	protected void onDestroy() {
 		super.onDestroy();
 		Log.v(TAG, "onDestroy called");
+	}
+
+	@Override
+	public void onBackPressed() {
+		if (startFragment.isVisible()) {
+			// TODO
+		} else if (gameFragment.isVisible()) {
+			networkManager.write(Constants.LEAVE_GAME.getBytes());
+			getFragmentManager().beginTransaction()
+					.replace(R.id.container_root, startFragment, Constants.START_FRAGMENT).commit();
+		} else if (chatFragment.isVisible()) {
+			networkManager.write(Constants.LEAVE_CHAT.getBytes());
+			getFragmentManager().beginTransaction()
+					.replace(R.id.container_root, startFragment, Constants.START_FRAGMENT).commit();
+		}
+		super.onBackPressed();
 	}
 
 	/**
@@ -319,7 +336,8 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 				// send first question ID
 				gameFragment.setGameMaster();
 				gameFragment.sendId(Constants.FIRST_QUESTION);
-				getFragmentManager().beginTransaction().replace(R.id.container_root, gameFragment).commit();
+				getFragmentManager().beginTransaction()
+						.replace(R.id.container_root, gameFragment, Constants.GAME_FRAGMENT).commit();
 				Log.v(TAG, "Peer accepted my game request.");
 
 			} else if (Constants.CANCEL_REQUEST.equals(readMessage)) {
@@ -328,7 +346,8 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 
 			} else if (readMessage.startsWith(Constants.FIRST_QUESTION)) {
 				String id = readMessage.replaceAll("\\D+", "");
-				getFragmentManager().beginTransaction().replace(R.id.container_root, gameFragment).commit();
+				getFragmentManager().beginTransaction()
+						.replace(R.id.container_root, gameFragment, Constants.GAME_FRAGMENT).commit();
 				gameFragment.populateFrameFields(Integer.parseInt(id));
 				gameFragment.indexQuestion(Integer.parseInt(id));
 
@@ -345,9 +364,16 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 			} else if (readMessage.startsWith(Constants.CHAT_REQUEST_SENT)) {
 				startFragment.newChat(opponent);
 
+			} else if (readMessage.startsWith(Constants.LEAVE_GAME)) {
+				gameFragment.displayResult("Opponent surrendered!");
+
+			} else if (readMessage.startsWith(Constants.LEAVE_CHAT)) {
+				chatFragment.displayUserExitDialog("Opponent left chat!");
+
 			} else if (Constants.ACCEPT_CHAT.equals(readMessage)) {
 				// send first question ID
-				getFragmentManager().beginTransaction().replace(R.id.container_root, chatFragment).commit();
+				getFragmentManager().beginTransaction()
+						.replace(R.id.container_root, chatFragment, Constants.CHAT_FRAGMENT).commit();
 				Log.v(TAG, "Peer accepted my chat request.");
 
 			} else {
@@ -357,6 +383,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 
 		case MY_HANDLE:
 			Object obj = msg.obj;
+			this.networkManager = (NetworkManager) obj;
 			startFragment.setNetworkManager((NetworkManager) obj);
 			chatFragment.setNetworkManager((NetworkManager) obj);
 			gameFragment.setNetworkManager((NetworkManager) obj);
@@ -387,23 +414,25 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 			handler = new ClientSocketHandler(((MessageTarget) this).getHandler(), p2pInfo.groupOwnerAddress);
 			handler.start();
 		}
+
 		chatFragment = new ChatFragment();
 		gameFragment = new GameFragment();
-
-		// Setting the start game screen.
 		startFragment = new StartFragment();
-		Bundle gameBundle = new Bundle();
-		gameBundle.putSerializable("startFragment", startFragment);
-		gameFragment.setArguments(gameBundle);
 
-		// Passing as an argument a reference to the quizFragment so that we can
-		// go back to it.
+		// GameFragment and ChatFragment must know of StartFragment
+		Bundle startBundle = new Bundle();
+		startBundle.putSerializable(Constants.START_FRAGMENT, startFragment);
+		gameFragment.setArguments(startBundle);
+		chatFragment.setArguments(startBundle);
+
+		// StartFragment must know of GameFragment and ChatFragment
 		Bundle bundle = new Bundle();
-		bundle.putSerializable("gameFragment", gameFragment);
-		bundle.putSerializable("chatFragment", chatFragment);
+		bundle.putSerializable(Constants.GAME_FRAGMENT, gameFragment);
+		bundle.putSerializable(Constants.CHAT_FRAGMENT, chatFragment);
 		startFragment.setArguments(bundle);
 
-		getFragmentManager().beginTransaction().replace(R.id.container_root, startFragment).commit();
+		getFragmentManager().beginTransaction().replace(R.id.container_root, startFragment, Constants.START_FRAGMENT)
+				.commit();
 		statusTxtView.setVisibility(View.GONE);
 	}
 

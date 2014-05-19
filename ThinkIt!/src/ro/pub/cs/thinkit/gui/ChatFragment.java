@@ -5,9 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ro.pub.cs.thinkit.R;
+import ro.pub.cs.thinkit.game.Constants;
 import ro.pub.cs.thinkit.network.NetworkManager;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -29,9 +32,12 @@ public class ChatFragment extends Fragment implements Serializable {
 	private ListView listView;
 	MessageAdapter adapter = null;
 	private List<String> items = new ArrayList<String>();
+	private StartFragment startFragment;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		Bundle args = getArguments();
+		startFragment = (StartFragment) args.getSerializable(Constants.START_FRAGMENT);
 		view = inflater.inflate(R.layout.chat_fragment, container, false);
 		chatLine = (TextView) view.findViewById(R.id.txtChatLine);
 		listView = (ListView) view.findViewById(android.R.id.list);
@@ -65,6 +71,16 @@ public class ChatFragment extends Fragment implements Serializable {
 			adapter.add(readMessage);
 			adapter.notifyDataSetChanged();
 		}
+	}
+
+	public void displayUserExitDialog(String message) {
+		new AlertDialog.Builder(view.getContext()).setTitle("Notification!").setMessage(message)
+				.setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						getFragmentManager().beginTransaction()
+								.replace(R.id.container_root, startFragment, Constants.START_FRAGMENT).commit();
+					}
+				}).setIcon(android.R.drawable.ic_dialog_alert).show();
 	}
 
 	/**
