@@ -15,7 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-public class StartGameFragment extends Fragment implements Serializable {
+public class StartFragment extends Fragment implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String TAG = "START_GAME";
 	private View view;

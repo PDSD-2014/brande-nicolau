@@ -33,10 +33,14 @@ public class GameFragment extends Fragment implements Serializable {
 	private static final String TAG = "GAME";
 	private View view;
 	private NetworkManager networkManager;
+
 	private Button answer1;
 	private Button answer2;
 	private Button answer3;
 	private Button answer4;
+	private ArrayList<Button> buttons;
+	private Drawable originalButtonDrawable;
+
 	private TextView myName;
 	private TextView myScore;
 	private TextView opponentName;
@@ -49,7 +53,6 @@ public class GameFragment extends Fragment implements Serializable {
 	private int questionId;
 	private QuestionService qs = QuestionService.getInstance(getActivity());
 	private Question question;
-	private ArrayList<Button> buttons;
 	private int myScoreSituation = 0;
 	private int opponentScoreSituation = 0;
 	private boolean iEndedRound = false;
@@ -57,34 +60,34 @@ public class GameFragment extends Fragment implements Serializable {
 	private boolean displayed = false;
 	private boolean gameMaster = false;
 	private boolean timerStarted = false;
-	private Drawable originalButtonColor;
 
 	private Handler handler = new Handler();
 	private HashMap<Integer, Boolean> previousQuestions = new HashMap<Integer, Boolean>();
-	private StartGameFragment startFragment;
+	private StartFragment startFragment;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		Bundle args = getArguments();
-		startFragment = (StartGameFragment) args.getSerializable("startFragment");
+		startFragment = (StartFragment) args.getSerializable("startFragment");
 		view = inflater.inflate(R.layout.game_fragment, container, false);
+
 		connectWithFrameFields();
 		populateFrameFields(questionId);
-		originalButtonColor = answer1.getBackground();
 
 		myName.setText(Constants.MY_NAME);
 		opponentName.setText(Constants.OPPONENT_NAME);
+
+		// handle buttons
+		originalButtonDrawable = answer1.getBackground();
 		buttons = new ArrayList<Button>();
 		buttons.add(answer1);
 		buttons.add(answer2);
 		buttons.add(answer3);
 		buttons.add(answer4);
-
 		ButtonListener buttonListener = new ButtonListener();
-		answer1.setOnClickListener(buttonListener);
-		answer2.setOnClickListener(buttonListener);
-		answer3.setOnClickListener(buttonListener);
-		answer4.setOnClickListener(buttonListener);
+		for (Button b : buttons) {
+			b.setOnClickListener(buttonListener);
+		}
 		return view;
 	}
 
@@ -265,6 +268,7 @@ public class GameFragment extends Fragment implements Serializable {
 		displayed = false;
 		timerStarted = false;
 		previousQuestions.clear();
+		buttons.clear();
 	}
 
 	/**
@@ -311,10 +315,10 @@ public class GameFragment extends Fragment implements Serializable {
 		iEndedRound = false;
 		opponentEndedRound = false;
 
-		answer1.setBackground(originalButtonColor);
-		answer2.setBackground(originalButtonColor);
-		answer3.setBackground(originalButtonColor);
-		answer4.setBackground(originalButtonColor);
+		answer1.setBackground(originalButtonDrawable);
+		answer2.setBackground(originalButtonDrawable);
+		answer3.setBackground(originalButtonDrawable);
+		answer4.setBackground(originalButtonDrawable);
 
 	}
 
@@ -349,9 +353,9 @@ public class GameFragment extends Fragment implements Serializable {
 	 * Colors the right answer in GREEN.
 	 */
 	private void viewCorrectAnswer() {
-		for (Button btn : buttons) {
-			if (btn.getText().equals(question.getCa())) {
-				btn.setBackgroundColor(Color.GREEN);
+		for (Button b : buttons) {
+			if (b.getText().equals(question.getCa())) {
+				b.setBackgroundColor(Color.GREEN);
 				break;
 			}
 		}

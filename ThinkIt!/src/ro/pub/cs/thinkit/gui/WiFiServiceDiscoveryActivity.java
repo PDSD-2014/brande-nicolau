@@ -72,9 +72,10 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 	private WifiP2pDnsSdServiceRequest serviceRequest;
 
 	private Handler handler = new Handler(this);
-	private ChatFragment chatFragment;
-	private StartGameFragment startGameFragment;
+	private StartFragment startFragment;
 	private GameFragment gameFragment;
+	private ChatFragment chatFragment;
+
 	private WiFiDirectServicesList servicesList;
 
 	private TextView statusTxtView;
@@ -124,6 +125,22 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 			getFragmentManager().beginTransaction().remove(frag).commit();
 		}
 		super.onRestart();
+		Log.v(TAG, "onRestart called");
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		receiver = new WiFiDirectBroadcastReceiver(manager, channel, this);
+		registerReceiver(receiver, intentFilter);
+		Log.v(TAG, "onResume called");
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		unregisterReceiver(receiver);
+		Log.v(TAG, "onPause called");
 	}
 
 	@Override
@@ -143,6 +160,13 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 			});
 		}
 		super.onStop();
+		Log.v(TAG, "onStop called");
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		Log.v(TAG, "onDestroy called");
 	}
 
 	/**
@@ -289,7 +313,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 			Log.d(TAG, readMessage);
 
 			if (Constants.START_GAME.equals(readMessage)) {
-				startGameFragment.newChallenge(opponent);
+				startFragment.newChallenge(opponent);
 
 			} else if (Constants.ACCEPT_GAME.equals(readMessage)) {
 				// send first question ID
@@ -299,7 +323,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 				Log.v(TAG, "Peer accepted my game request.");
 
 			} else if (Constants.CANCEL_REQUEST.equals(readMessage)) {
-				startGameFragment.challengeDenied();
+				startFragment.challengeDenied();
 				Log.v(TAG, "Peer denied my game request.");
 
 			} else if (readMessage.startsWith(Constants.FIRST_QUESTION)) {
@@ -319,7 +343,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 				gameFragment.updateOpponentRoundResult(reportedResult);
 
 			} else if (readMessage.startsWith(Constants.CHAT_REQUEST_SENT)) {
-				startGameFragment.newChat(opponent);
+				startFragment.newChat(opponent);
 
 			} else if (Constants.ACCEPT_CHAT.equals(readMessage)) {
 				// send first question ID
@@ -333,24 +357,11 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 
 		case MY_HANDLE:
 			Object obj = msg.obj;
-			startGameFragment.setNetworkManager((NetworkManager) obj);
+			startFragment.setNetworkManager((NetworkManager) obj);
 			chatFragment.setNetworkManager((NetworkManager) obj);
 			gameFragment.setNetworkManager((NetworkManager) obj);
 		}
 		return true;
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-		receiver = new WiFiDirectBroadcastReceiver(manager, channel, this);
-		registerReceiver(receiver, intentFilter);
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-		unregisterReceiver(receiver);
 	}
 
 	@Override
@@ -380,9 +391,9 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 		gameFragment = new GameFragment();
 
 		// Setting the start game screen.
-		startGameFragment = new StartGameFragment();
+		startFragment = new StartFragment();
 		Bundle gameBundle = new Bundle();
-		gameBundle.putSerializable("startFragment", startGameFragment);
+		gameBundle.putSerializable("startFragment", startFragment);
 		gameFragment.setArguments(gameBundle);
 
 		// Passing as an argument a reference to the quizFragment so that we can
@@ -390,9 +401,9 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 		Bundle bundle = new Bundle();
 		bundle.putSerializable("gameFragment", gameFragment);
 		bundle.putSerializable("chatFragment", chatFragment);
-		startGameFragment.setArguments(bundle);
+		startFragment.setArguments(bundle);
 
-		getFragmentManager().beginTransaction().replace(R.id.container_root, startGameFragment).commit();
+		getFragmentManager().beginTransaction().replace(R.id.container_root, startFragment).commit();
 		statusTxtView.setVisibility(View.GONE);
 	}
 
@@ -400,4 +411,5 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 		String current = statusTxtView.getText().toString();
 		statusTxtView.setText(current + "\n" + status);
 	}
+
 }
