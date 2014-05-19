@@ -31,28 +31,28 @@ import android.widget.TextView;
 public class GameFragment extends Fragment implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String TAG = "GAME";
-	private View view;
-	private NetworkManager networkManager;
+	private transient View view;
+	private transient NetworkManager networkManager;
 
-	private Button answer1;
-	private Button answer2;
-	private Button answer3;
-	private Button answer4;
-	private ArrayList<Button> buttons;
-	private Drawable originalButtonDrawable;
+	private transient Button answer1;
+	private transient Button answer2;
+	private transient Button answer3;
+	private transient Button answer4;
+	private transient ArrayList<Button> buttons;
+	private transient Drawable originalButtonDrawable;
 
-	private TextView myName;
-	private TextView myScore;
-	private TextView opponentName;
-	private TextView opponentScore;
-	private TextView questionText;
-	private TextView timer;
-	private GameTimer gameTimer;
-	private ProgressBar myProgressBar;
-	private ProgressBar opponentProgressBar;
+	private transient TextView myName;
+	private transient TextView myScore;
+	private transient TextView opponentName;
+	private transient TextView opponentScore;
+	private transient TextView questionText;
+	private transient TextView timer;
+	private transient GameTimer gameTimer;
+	private transient ProgressBar myProgressBar;
+	private transient ProgressBar opponentProgressBar;
 	private int questionId;
-	private QuestionService qs = QuestionService.getInstance(getActivity());
-	private Question question;
+	private transient QuestionService qs = QuestionService.getInstance(getActivity());
+	private transient Question question;
 	private int myScoreSituation = 0;
 	private int opponentScoreSituation = 0;
 	private boolean iEndedRound = false;
@@ -61,9 +61,9 @@ public class GameFragment extends Fragment implements Serializable {
 	private boolean gameMaster = false;
 	private boolean timerStarted = false;
 
-	private Handler handler = new Handler();
+	private transient Handler handler = new Handler();
 	private HashMap<Integer, Boolean> previousQuestions = new HashMap<Integer, Boolean>();
-	private StartFragment startFragment;
+	private transient StartFragment startFragment;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -372,7 +372,9 @@ public class GameFragment extends Fragment implements Serializable {
 		timerStarted = false;
 	}
 
-	private class ButtonListener implements View.OnClickListener {
+	private class ButtonListener implements Serializable, View.OnClickListener {
+
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		public void onClick(View v) {

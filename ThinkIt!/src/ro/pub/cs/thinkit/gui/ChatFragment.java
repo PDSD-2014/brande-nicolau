@@ -26,13 +26,13 @@ import android.widget.TextView;
  */
 public class ChatFragment extends Fragment implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private View view;
-	private NetworkManager networkManager;
-	private TextView chatLine;
-	private ListView listView;
-	MessageAdapter adapter = null;
+	private transient View view;
+	private transient NetworkManager networkManager;
+	private transient TextView chatLine;
+	private transient ListView listView;
+	private transient MessageAdapter adapter = null;
 	private List<String> items = new ArrayList<String>();
-	private StartFragment startFragment;
+	private transient StartFragment startFragment;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -86,8 +86,9 @@ public class ChatFragment extends Fragment implements Serializable {
 	/**
 	 * ArrayAdapter to manage messages.
 	 */
-	public class MessageAdapter extends ArrayAdapter<String> {
+	public class MessageAdapter extends ArrayAdapter<String> implements Serializable {
 
+		private static final long serialVersionUID = 1L;
 		List<String> messages = null;
 
 		public MessageAdapter(Context context, int textViewResourceId, List<String> items) {

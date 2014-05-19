@@ -18,10 +18,10 @@ import android.widget.Toast;
 public class StartFragment extends Fragment implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String TAG = "START_GAME";
-	private View view;
-	private NetworkManager networkManager;
-	private GameFragment gameFragment;
-	private ChatFragment chatFragment;
+	private transient View view;
+	private transient NetworkManager networkManager;
+	private transient GameFragment gameFragment;
+	private transient ChatFragment chatFragment;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -69,7 +69,8 @@ public class StartFragment extends Fragment implements Serializable {
 					public void onClick(DialogInterface dialog, int which) {
 						networkManager.write(Constants.ACCEPT_GAME.getBytes());
 						getFragmentManager().beginTransaction()
-								.replace(R.id.container_root, gameFragment, Constants.GAME_FRAGMENT).addToBackStack(null).commit();
+								.replace(R.id.container_root, gameFragment, Constants.GAME_FRAGMENT)
+								.addToBackStack(null).commit();
 						Log.v(TAG, "Accepted game request.");
 					}
 				}).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -87,7 +88,8 @@ public class StartFragment extends Fragment implements Serializable {
 					public void onClick(DialogInterface dialog, int which) {
 						networkManager.write(Constants.ACCEPT_CHAT.getBytes());
 						getFragmentManager().beginTransaction()
-								.replace(R.id.container_root, chatFragment, Constants.CHAT_FRAGMENT).addToBackStack(null).commit();
+								.replace(R.id.container_root, chatFragment, Constants.CHAT_FRAGMENT)
+								.addToBackStack(null).commit();
 						Log.v(TAG, "Accepted chat request.");
 					}
 				}).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
