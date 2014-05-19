@@ -115,7 +115,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 		startRegistrationAndDiscovery();
 
 		servicesList = new WiFiDirectServicesList();
-		getFragmentManager().beginTransaction().add(R.id.container_root, servicesList, "services").commit();
+		getFragmentManager().beginTransaction().add(R.id.container_root, servicesList, "services").addToBackStack(null).commit();
 
 	}
 
@@ -176,12 +176,9 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 			// TODO
 		} else if (gameFragment.isVisible()) {
 			networkManager.write(Constants.LEAVE_GAME.getBytes());
-			getFragmentManager().beginTransaction()
-					.replace(R.id.container_root, startFragment, Constants.START_FRAGMENT).commit();
+			gameFragment.resetGame();
 		} else if (chatFragment.isVisible()) {
 			networkManager.write(Constants.LEAVE_CHAT.getBytes());
-			getFragmentManager().beginTransaction()
-					.replace(R.id.container_root, startFragment, Constants.START_FRAGMENT).commit();
 		}
 		super.onBackPressed();
 	}
@@ -337,7 +334,8 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 				gameFragment.setGameMaster();
 				gameFragment.sendId(Constants.FIRST_QUESTION);
 				getFragmentManager().beginTransaction()
-						.replace(R.id.container_root, gameFragment, Constants.GAME_FRAGMENT).commit();
+						.replace(R.id.container_root, gameFragment, Constants.GAME_FRAGMENT).addToBackStack(null).commit();
+				
 				Log.v(TAG, "Peer accepted my game request.");
 
 			} else if (Constants.CANCEL_REQUEST.equals(readMessage)) {
@@ -373,7 +371,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 			} else if (Constants.ACCEPT_CHAT.equals(readMessage)) {
 				// send first question ID
 				getFragmentManager().beginTransaction()
-						.replace(R.id.container_root, chatFragment, Constants.CHAT_FRAGMENT).commit();
+						.replace(R.id.container_root, chatFragment, Constants.CHAT_FRAGMENT).addToBackStack(null).commit();
 				Log.v(TAG, "Peer accepted my chat request.");
 
 			} else {
@@ -431,8 +429,7 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 		bundle.putSerializable(Constants.CHAT_FRAGMENT, chatFragment);
 		startFragment.setArguments(bundle);
 
-		getFragmentManager().beginTransaction().replace(R.id.container_root, startFragment, Constants.START_FRAGMENT)
-				.commit();
+		getFragmentManager().beginTransaction().replace(R.id.container_root, startFragment, Constants.START_FRAGMENT).commit();
 		statusTxtView.setVisibility(View.GONE);
 	}
 

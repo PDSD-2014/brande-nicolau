@@ -69,7 +69,7 @@ public class StartFragment extends Fragment implements Serializable {
 					public void onClick(DialogInterface dialog, int which) {
 						networkManager.write(Constants.ACCEPT_GAME.getBytes());
 						getFragmentManager().beginTransaction()
-								.replace(R.id.container_root, gameFragment, Constants.GAME_FRAGMENT).commit();
+								.replace(R.id.container_root, gameFragment, Constants.GAME_FRAGMENT).addToBackStack(null).commit();
 						Log.v(TAG, "Accepted game request.");
 					}
 				}).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -87,7 +87,7 @@ public class StartFragment extends Fragment implements Serializable {
 					public void onClick(DialogInterface dialog, int which) {
 						networkManager.write(Constants.ACCEPT_CHAT.getBytes());
 						getFragmentManager().beginTransaction()
-								.replace(R.id.container_root, chatFragment, Constants.CHAT_FRAGMENT).commit();
+								.replace(R.id.container_root, chatFragment, Constants.CHAT_FRAGMENT).addToBackStack(null).commit();
 						Log.v(TAG, "Accepted chat request.");
 					}
 				}).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {

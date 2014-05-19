@@ -256,9 +256,10 @@ public class GameFragment extends Fragment implements Serializable {
 		return previousQuestions.size() == Constants.NO_ROUNDS;
 	}
 
-	private void resetGame() {
+	public void resetGame() {
 		myScore.setText("0 pts");
 		opponentName.setText("0 pts");
+		timer.setText("10");
 		myProgressBar.setProgress(0);
 		opponentProgressBar.setProgress(0);
 		myScoreSituation = 0;
