@@ -35,7 +35,6 @@ public class StartGameFragment extends Fragment implements Serializable {
 			public void onClick(View arg0) {
 				if (networkManager != null) {
 					networkManager.write(Constants.START_GAME.getBytes());
-					gameFragment.clearPreviousQuestions();
 					showToast(Constants.REQUEST_SENT);
 					Log.v(TAG, "I want to start a game.");
 				}

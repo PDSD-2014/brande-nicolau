@@ -106,8 +106,6 @@ public class GameFragment extends Fragment implements Serializable {
 		myProgressBar = (ProgressBar) view.findViewById(R.id.myProgress);
 		opponentProgressBar = (ProgressBar) view.findViewById(R.id.opponentProgress);
 
-		resetGame();
-
 		gameTimer = new GameTimer(this);
 	}
 
@@ -266,9 +264,6 @@ public class GameFragment extends Fragment implements Serializable {
 		opponentEndedRound = false;
 		displayed = false;
 		timerStarted = false;
-	}
-
-	public void clearPreviousQuestions() {
 		previousQuestions.clear();
 	}
 
@@ -303,6 +298,7 @@ public class GameFragment extends Fragment implements Serializable {
 				.setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
 						getFragmentManager().beginTransaction().replace(R.id.container_root, startFragment).commit();
+						resetGame();
 					}
 				}).setIcon(android.R.drawable.ic_dialog_alert).show();
 	}

@@ -287,37 +287,45 @@ public class WiFiServiceDiscoveryActivity extends Activity implements DeviceClic
 			// construct a string from the valid bytes in the buffer
 			String readMessage = new String(readBuf, 0, msg.arg1);
 			Log.d(TAG, readMessage);
+
 			if (Constants.START_GAME.equals(readMessage)) {
 				startGameFragment.newChallenge(opponent);
+
 			} else if (Constants.ACCEPT_GAME.equals(readMessage)) {
 				// send first question ID
 				gameFragment.setGameMaster();
-				gameFragment.clearPreviousQuestions();
 				gameFragment.sendId(Constants.FIRST_QUESTION);
 				getFragmentManager().beginTransaction().replace(R.id.container_root, gameFragment).commit();
 				Log.v(TAG, "Peer accepted my game request.");
+
 			} else if (Constants.CANCEL_REQUEST.equals(readMessage)) {
 				startGameFragment.challengeDenied();
 				Log.v(TAG, "Peer denied my game request.");
+
 			} else if (readMessage.startsWith(Constants.FIRST_QUESTION)) {
 				String id = readMessage.replaceAll("\\D+", "");
 				getFragmentManager().beginTransaction().replace(R.id.container_root, gameFragment).commit();
 				gameFragment.populateFrameFields(Integer.parseInt(id));
 				gameFragment.indexQuestion(Integer.parseInt(id));
+
 			} else if (readMessage.startsWith(Constants.RENEW_QUESTION)) {
 				String id = readMessage.replaceAll("\\D+", "");
 				gameFragment.resetRoundData();
 				gameFragment.populateFrameFields(Integer.parseInt(id));
 				gameFragment.indexQuestion(Integer.parseInt(id));
+
 			} else if (readMessage.startsWith(Constants.REPORTED_ROUND_RESULT)) {
 				int reportedResult = Integer.parseInt(readMessage.replaceAll("\\D+", ""));
 				gameFragment.updateOpponentRoundResult(reportedResult);
+
 			} else if (readMessage.startsWith(Constants.CHAT_REQUEST_SENT)) {
 				startGameFragment.newChat(opponent);
+
 			} else if (Constants.ACCEPT_CHAT.equals(readMessage)) {
 				// send first question ID
 				getFragmentManager().beginTransaction().replace(R.id.container_root, chatFragment).commit();
 				Log.v(TAG, "Peer accepted my chat request.");
+
 			} else {
 				chatFragment.pushMessage("Buddy: " + readMessage);
 			}
